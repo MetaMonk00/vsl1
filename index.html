@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What You're Getting | GrowWise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange: #FF8C00;
+    --orange-dim: #cc7000;
+    --charcoal: #141414;
+    --charcoal-2: #1c1c1c;
+    --charcoal-3: #232323;
+    --line: #2e2e2e;
+    --ink: #f1efe9;
+    --ink-dim: #a8a5a0;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--charcoal);
+    color: var(--ink);
+    font-family: 'Figtree', sans-serif;
+    line-height: 1.65;
+    position: relative;
+    overflow-x: hidden;
+  }
+  /* ambient glow */
+  body::before{
+    content:"";
+    position: fixed;
+    top: -20%;
+    right: -15%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(255,140,0,0.16) 0%, rgba(255,140,0,0) 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after{
+    content:"";
+    position: fixed;
+    bottom: -25%;
+    left: -20%;
+    width: 55vw;
+    height: 55vw;
+    background: radial-gradient(circle, rgba(255,140,0,0.08) 0%, rgba(255,140,0,0) 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .noise{
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap{
+    position: relative;
+    z-index: 2;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 64px 24px 120px;
+  }
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Montserrat',sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--orange);
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px; height:7px;
+    border-radius:50%;
+    background: var(--orange);
+    box-shadow: 0 0 10px 2px rgba(255,140,0,0.6);
+  }
+
+  h1{
+    font-family:'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: clamp(32px, 5vw, 46px);
+    line-height: 1.12;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+  h1 span{ color: var(--orange); }
+
+  .sub{
+    color: var(--ink-dim);
+    font-size: 17px;
+    max-width: 54ch;
+    margin: 0 0 36px;
+  }
+
+  .video-placeholder{
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 14px;
+    background: var(--charcoal-2) center / cover no-repeat;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    margin-bottom: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .video-placeholder iframe{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .video-placeholder::before{
+    content:"";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 45%, rgba(255,140,0,0.14), transparent 65%);
+  }
+  .play-btn{
+    position: relative;
+    z-index: 1;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: var(--orange);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 28px -6px rgba(255,140,0,0.55);
+  }
+  .play-btn svg{
+    width: 24px;
+    height: 24px;
+    fill: #171100;
+    margin-left: 3px;
+  }
+  .video-label{
+    position: absolute;
+    bottom: 16px;
+    left: 18px;
+    z-index: 1;
+    font-family:'Montserrat',sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .progress-track{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    z-index: 1;
+  }
+  .progress-fill{
+    height: 100%;
+    width: 0%;
+    background: var(--orange);
+    box-shadow: 0 0 10px 1px rgba(255,140,0,0.6);
+    animation: playhead 6s cubic-bezier(0.11, 0.85, 0.2, 1) infinite;
+  }
+  @keyframes playhead{
+    0%{ width: 0%; }
+    100%{ width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .progress-fill{ animation: none; width: 60%; }
+  }
+
+  .actions{
+    display:flex;
+    gap:12px;
+    flex-wrap: wrap;
+    margin-bottom: 44px;
+  }
+  button, .btn{
+    font-family:'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    border-radius: 10px;
+    padding: 15px 24px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn-primary{
+    background: var(--orange);
+    color: #171100;
+    box-shadow: 0 6px 24px -6px rgba(255,140,0,0.55);
+  }
+  .btn-primary:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 10px 28px -6px rgba(255,140,0,0.65);
+  }
+  .btn-ghost{
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .btn-ghost:hover{
+    border-color: var(--orange);
+    color: var(--orange);
+  }
+  .btn-ghost.copied{
+    border-color: #6fbf73;
+    color: #6fbf73;
+  }
+
+  .icon{ width:16px; height:16px; flex-shrink:0; }
+
+  .divider{
+    height:1px;
+    background: linear-gradient(90deg, var(--line), transparent);
+    margin: 0 0 40px;
+  }
+
+  .feature{
+    padding: 26px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .feature:first-of-type{ border-top: 1px solid var(--line); }
+  .feature-head{
+    display:flex;
+    align-items:baseline;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+  .num{
+    font-family:'Montserrat',sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--orange);
+    letter-spacing: 0.05em;
+    flex-shrink:0;
+  }
+  .feature h2{
+    font-family:'Montserrat',sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+  .feature p{
+    margin: 0 0 10px;
+    color: var(--ink-dim);
+    font-size: 15.5px;
+  }
+  .feature p:last-child{ margin-bottom: 0; }
+  .quote{
+    background: var(--charcoal-3);
+    border-left: 2px solid var(--orange);
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-size: 14.5px;
+    color: var(--ink);
+    font-style: italic;
+    margin: 10px 0;
+  }
+  .feature ul{
+    margin: 8px 0 0;
+    padding-left: 18px;
+    color: var(--ink-dim);
+    font-size: 15px;
+  }
+  .feature li{ margin-bottom: 4px; }
+
+  .bottom-line{
+    margin-top: 44px;
+    padding: 28px;
+    background: var(--charcoal-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  .bottom-line h3{
+    font-family:'Montserrat',sans-serif;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--orange);
+    margin: 0 0 10px;
+  }
+  .bottom-line p{
+    margin:0;
+    color: var(--ink-dim);
+    font-size: 15.5px;
+  }
+
+  .cta-block{
+    margin-top: 48px;
+    text-align: center;
+    padding: 40px 24px;
+    border-radius: 16px;
+    background: linear-gradient(160deg, rgba(255,140,0,0.1), rgba(255,140,0,0.02));
+    border: 1px solid rgba(255,140,0,0.25);
+  }
+  .cta-block h3{
+    font-family:'Montserrat',sans-serif;
+    font-size: 22px;
+    margin: 0 0 8px;
+  }
+  .cta-block p{
+    color: var(--ink-dim);
+    margin: 0 0 22px;
+    font-size: 15px;
+  }
+  .cta-block .btn-primary{
+    padding: 16px 34px;
+    font-size: 15px;
+  }
+
+  @media (max-width: 480px){
+    .wrap{ padding: 48px 18px 90px; }
+    .actions{ flex-direction: column; }
+    button, .btn{ width: 100%; justify-content: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="wrap">
+
+  <div class="eyebrow">Your GrowWise Recap</div>
+  <h1>Here's exactly what<br>you're <span>getting</span>.</h1>
+  <p class="sub">A quick rundown of everything from the video, itemized so you've got it in writing before the call.</p>
+
+  <div class="video-placeholder" id="videoFacade" onclick="loadVideo()" style="background-image: linear-gradient(rgba(20,20,20,0.35), rgba(20,20,20,0.55)), url('https://img.youtube.com/vi/88g_ghNdCRU/hqdefault.jpg');">
+    <div class="play-btn">
+      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </div>
+    <div class="video-label">Watch the walkthrough</div>
+    <div class="progress-track">
+      <div class="progress-fill"></div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-ghost" id="copyBtn" onclick="copyNotes()">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      <span id="copyLabel">Copy Notes</span>
+    </button>
+    <a href="https://growwisebusiness.com/book" target="_blank" class="btn btn-primary">
+      Schedule Your Call
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="feature">
+    <div class="feature-head"><span class="num">01</span><h2>A Website That Actually Works</h2></div>
+    <p>Not just a pretty page. When someone fills out your form, the lead goes straight to an app on your phone instantly. There's also a live chat widget on the site, so when a visitor types in their name, number, and what they need done, two things happen right away:</p>
+    <ul>
+      <li>You get a text alerting you to the new lead</li>
+      <li>The customer gets an automatic text letting them know you got their request and will follow up soon</li>
+    </ul>
+    <p>Nothing sits in an inbox getting ignored. Everything connects to your Google Business page too, so leads flow in from every direction and land in the same place.</p>
+  </div>
+
+  <div class="feature">
+    <div class="feature-head"><span class="num">02</span><h2>Missed Call Text Back</h2></div>
+    <p>You can't always answer the phone when you're on a job. This system covers you. If you miss a call, the caller automatically gets a text like:</p>
+    <div class="quote">"Sorry we missed your call, we're with a client right now. Text us here and we'll get back to you, or you can book an appointment at [your website]."</div>
+    <p>That keeps the lead instead of losing it to the next business they call.</p>
+  </div>
+
+  <div class="feature">
+    <div class="feature-head"><span class="num">03</span><h2>Automated Google Review System</h2></div>
+    <p>After finishing a job, you tag the customer in the system and they get sent a link. If they leave 4 or 5 stars, it takes them straight to your Google review page. Below that, they're given an option to leave private feedback instead, which keeps you compliant with FTC rules around review gating.</p>
+    <p>If someone doesn't leave a review right away, the system automatically follows up with them week after week until they do, no manual reminders needed.</p>
+  </div>
+
+  <div class="feature">
+    <div class="feature-head"><span class="num">04</span><h2>One Unified App for Everything</h2></div>
+    <p>All your texts, calls, and contacts, including Facebook and Instagram messages, live in a single inbox on your phone. No more juggling five different apps or losing track of conversations.</p>
+  </div>
+
+  <div class="feature">
+    <div class="feature-head"><span class="num">05</span><h2>Year-Long Follow-Up Sequence</h2></div>
+    <p>Once a job is done, customers get followed up with every 2 to 3 months for the next year, keeping you top of mind for referrals and repeat business. Most small businesses lose customers simply because they're forgotten. This keeps that from happening.</p>
+  </div>
+
+  <div class="bottom-line">
+    <h3>The Bottom Line</h3>
+    <p>This whole system is built to plug the holes where small businesses typically lose leads: missed calls, missed texts, reviews that never get left, and customers who forget you exist after the job is done. It's the kind of automation big companies already use, built and priced for small businesses.</p>
+  </div>
+
+  <div class="cta-block">
+    <h3>Ready to see it in action?</h3>
+    <p>We'll walk through all of this in more detail and answer your questions live.</p>
+    <a href="https://growwisebusiness.com/book" target="_blank" class="btn btn-primary">
+      Schedule Your Call
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+
+</div>
+
+<script>
+  const notesText = `WHAT YOU'RE GETTING: A QUICK BREAKDOWN
+
+1. A WEBSITE THAT ACTUALLY WORKS
+Not just a pretty page. When someone fills out your form, the lead goes straight to an app on your phone instantly. There's also a live chat widget on the site, so when a visitor types in their name, number, and what they need done, two things happen right away:
+- You get a text alerting you to the new lead
+- The customer gets an automatic text letting them know you got their request and will follow up soon
+Nothing sits in an inbox getting ignored. Everything connects to your Google Business page too, so leads flow in from every direction and land in the same place.
+
+2. MISSED CALL TEXT BACK
+You can't always answer the phone when you're on a job. This system covers you. If you miss a call, the caller automatically gets a text like:
+"Sorry we missed your call, we're with a client right now. Text us here and we'll get back to you, or you can book an appointment at [your website]."
+That keeps the lead instead of losing it to the next business they call.
+
+3. AUTOMATED GOOGLE REVIEW SYSTEM
+After finishing a job, you tag the customer in the system and they get sent a link. If they leave 4 or 5 stars, it takes them straight to your Google review page. Below that, they're given an option to leave private feedback instead, which keeps you compliant with FTC rules around review gating.
+If someone doesn't leave a review right away, the system automatically follows up with them week after week until they do, no manual reminders needed.
+
+4. ONE UNIFIED APP FOR EVERYTHING
+All your texts, calls, and contacts, including Facebook and Instagram messages, live in a single inbox on your phone. No more juggling five different apps or losing track of conversations.
+
+5. YEAR-LONG FOLLOW-UP SEQUENCE
+Once a job is done, customers get followed up with every 2 to 3 months for the next year, keeping you top of mind for referrals and repeat business. Most small businesses lose customers simply because they're forgotten. This keeps that from happening.
+
+THE BOTTOM LINE
+This whole system is built to plug the holes where small businesses typically lose leads: missed calls, missed texts, reviews that never get left, and customers who forget you exist after the job is done. It's the kind of automation big companies already use, built and priced for small businesses.`;
+
+  function copyNotes(){
+    navigator.clipboard.writeText(notesText).then(() => {
+      const btn = document.getElementById('copyBtn');
+      const label = document.getElementById('copyLabel');
+      const prevLabel = label.textContent;
+      btn.classList.add('copied');
+      label.textContent = 'Copied!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        label.textContent = prevLabel;
+      }, 1800);
+    });
+  }
+
+  function loadVideo(){
+    const facade = document.getElementById('videoFacade');
+    facade.innerHTML = '<iframe src="https://www.youtube.com/embed/88g_ghNdCRU?autoplay=1" title="GrowWise walkthrough" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+    facade.style.cursor = 'default';
+    facade.onclick = null;
+  }
+</script>
+
+</body>
+</html>
