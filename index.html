@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>What You're Getting | GrowWise</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -117,50 +118,45 @@
     text-align: center;
   }
 
-  .video-placeholder{
+  /* ---------- video ---------- */
+  .video-stage{
+    margin-bottom: 36px;
+  }
+  .video-frame{
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    border-radius: 14px;
-    background: var(--charcoal-2) center / cover no-repeat;
+    border-radius: 14px 14px 0 0;
+    background: #000;
     border: 1px solid var(--line);
+    border-bottom: none;
     overflow: hidden;
-    margin-bottom: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
   }
-  .video-placeholder iframe{
+  .video-frame video{
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    border: 0;
+    object-fit: cover;
+    display: block;
+    background: #000;
   }
-  .video-placeholder::before{
-    content:"";
+
+  /* click-to-start gate (only shows if the browser blocks muted autoplay) */
+  .video-veil{
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 45%, rgba(255,140,0,0.14), transparent 65%);
-  }
-  .video-thumb{
-    position: absolute;
-    inset: 0;
-    z-index: 2;
+    z-index: 4;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    gap: 14px;
+    background: linear-gradient(rgba(20,20,20,0.45), rgba(20,20,20,0.62));
   }
-  .yt-player-wrap{
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-  }
+  .video-veil[hidden]{ display: none; }
   .play-btn{
-    position: relative;
-    z-index: 1;
     width: 68px;
     height: 68px;
     border-radius: 50%;
@@ -177,16 +173,62 @@
     margin-left: 3px;
   }
   .video-label{
-    position: absolute;
-    bottom: 16px;
-    left: 18px;
-    z-index: 1;
     font-family:'Montserrat',sans-serif;
     font-size: 12px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--ink-dim);
+    color: var(--ink);
   }
+
+  /* click-to-unmute banner */
+  .unmute-bar{
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    white-space: nowrap;
+    padding: 11px 20px;
+    border-radius: 999px;
+    background: var(--orange);
+    color: #171100;
+    font-family:'Montserrat',sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    box-shadow: 0 8px 26px -8px rgba(255,140,0,0.8);
+    animation: unmutePulse 2.2s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .unmute-bar[hidden]{ display: none; }
+  .unmute-bar svg{ width: 17px; height: 17px; fill: #171100; flex-shrink: 0; }
+  @keyframes unmutePulse{
+    0%,100%{ transform: translateX(-50%) scale(1); }
+    50%{ transform: translateX(-50%) scale(1.045); }
+  }
+
+  /* paused overlay, after playback has started */
+  .pause-badge{
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20,20,20,0.42);
+    pointer-events: none;
+  }
+  .pause-badge[hidden]{ display: none; }
+  .pause-badge svg{
+    width: 58px;
+    height: 58px;
+    fill: rgba(255,255,255,0.92);
+    filter: drop-shadow(0 4px 14px rgba(0,0,0,0.5));
+  }
+
   .progress-track{
     position: absolute;
     bottom: 0;
@@ -194,7 +236,7 @@
     right: 0;
     height: 4px;
     background: rgba(255,255,255,0.08);
-    z-index: 3;
+    z-index: 5;
   }
   .progress-fill{
     height: 100%;
@@ -203,6 +245,81 @@
     box-shadow: 0 0 10px 1px rgba(255,140,0,0.6);
     transition: width 0.25s linear;
   }
+
+  /* control strip under the player */
+  .video-controls{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    background: var(--charcoal-2);
+    border: 1px solid var(--line);
+    border-radius: 0 0 14px 14px;
+  }
+  .vc-btn{
+    font-family:'Montserrat',sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    color: var(--ink-dim);
+    background: var(--charcoal-3);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .vc-btn:hover{
+    color: var(--orange);
+    border-color: var(--orange);
+  }
+  .vc-btn svg{ width: 14px; height: 14px; flex-shrink: 0; }
+  .speed-group{
+    display: inline-flex;
+    gap: 4px;
+    margin-left: auto;
+    align-items: center;
+  }
+  .speed-label{
+    font-family:'Montserrat',sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-right: 4px;
+  }
+  .speed-btn{
+    font-family:'Montserrat',sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--ink-dim);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 7px 10px;
+    cursor: pointer;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .speed-btn:hover{ color: var(--orange); border-color: var(--orange); }
+  .speed-btn.active{
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #171100;
+  }
+  .time-readout{
+    font-family:'Montserrat',sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--ink-dim);
+    font-variant-numeric: tabular-nums;
+    padding: 0 4px;
+  }
+  .time-readout b{ color: var(--ink); font-weight: 700; }
 
   .actions{
     display:flex;
@@ -327,6 +444,144 @@
     font-size: 15.5px;
   }
 
+  /* ---------- jump-to-FAQ button ---------- */
+  .jump-faq{
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-family:'Montserrat',sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 15px 24px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid rgba(255,140,0,0.45);
+    color: var(--orange);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .jump-faq:hover{
+    background: rgba(255,140,0,0.10);
+    border-color: var(--orange);
+    transform: translateY(-1px);
+  }
+  .jump-faq svg{ width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* ---------- FAQ ---------- */
+  .faq{
+    margin-top: 52px;
+    scroll-margin-top: 24px;
+    position: relative;
+  }
+  .faq-head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .faq h2.faq-title{
+    font-family:'Montserrat',sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .faq h2.faq-title span{ color: var(--orange); }
+  .faq-intro{
+    color: var(--ink-dim);
+    font-size: 15.5px;
+    margin: 0 0 18px;
+    max-width: 58ch;
+  }
+  .faq-toggle-all{
+    font-family:'Figtree',sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-dim);
+    background: none;
+    border: none;
+    border-bottom: 1px dashed var(--line);
+    padding: 2px 0;
+    margin: 0 0 18px;
+    border-radius: 0;
+    cursor: pointer;
+  }
+  /* on wider screens it tucks up beside the heading */
+  @media (min-width: 701px){
+    .faq-toggle-all{
+      position: absolute;
+      top: 8px;
+      right: 0;
+      margin: 0;
+    }
+  }
+  .faq-toggle-all:hover{ color: var(--orange); border-bottom-color: var(--orange); }
+
+  .faq-item{
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--charcoal-2);
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .faq-item[open]{
+    border-color: rgba(255,140,0,0.30);
+  }
+  .faq-item summary{
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-family:'Montserrat',sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .faq-item summary::-webkit-details-marker{ display: none; }
+  .faq-item summary::marker{ content: ""; }
+  .faq-item summary:hover{ color: var(--orange); }
+  .faq-chevron{
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-left: auto;
+    margin-top: 3px;
+    color: var(--orange);
+    transition: transform .2s ease;
+  }
+  .faq-item[open] .faq-chevron{ transform: rotate(180deg); }
+  .faq-q-num{
+    font-family:'Montserrat',sans-serif;
+    font-weight: 800;
+    font-size: 12px;
+    color: var(--orange);
+    flex-shrink: 0;
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+  }
+  .faq-body{
+    padding: 0 18px 18px 48px;
+    color: var(--ink-dim);
+    font-size: 15.5px;
+  }
+  @media (max-width: 700px){
+    .faq-body{ padding-left: 18px; }
+    .faq-item summary{ padding: 15px 16px; font-size: 15.5px; }
+    .faq h2.faq-title{ font-size: 23px; }
+    .faq{ margin-top: 44px; }
+  }
+  .faq-body p{ margin: 0 0 10px; }
+  .faq-body p:last-child{ margin-bottom: 0; }
+  .faq-body ul{ margin: 8px 0 10px; padding-left: 18px; }
+  .faq-body li{ margin-bottom: 5px; }
+  .faq-body strong{ color: var(--ink); font-weight: 600; }
+
   .cta-block{
     margin-top: 48px;
     text-align: center;
@@ -350,10 +605,64 @@
     font-size: 15px;
   }
 
+  /* ---------- mobile ---------- */
+  @media (max-width: 700px){
+    .video-stage{ margin-bottom: 28px; }
+    .video-controls{
+      gap: 8px 6px;
+      padding: 10px;
+    }
+    /* row 1: mute + restart + time, row 2: full-width speed picker */
+    .vc-btn{
+      flex: 1 1 0;
+      justify-content: center;
+      min-height: 44px;
+      padding: 8px 10px;
+    }
+    .time-readout{
+      flex: 0 0 auto;
+      padding: 0 2px;
+      font-size: 12px;
+    }
+    .speed-group{
+      margin-left: 0;
+      flex: 1 0 100%;
+      justify-content: stretch;
+      gap: 6px;
+    }
+    .speed-label{ display: none; }
+    .speed-btn{
+      flex: 1 1 0;
+      min-height: 40px;
+      padding: 8px 4px;
+      font-size: 12px;
+    }
+    .unmute-bar{
+      font-size: 12px;
+      padding: 11px 15px;
+      bottom: 14px;
+      max-width: calc(100% - 24px);
+      white-space: normal;
+      text-align: left;
+      line-height: 1.3;
+    }
+    .play-btn{ width: 58px; height: 58px; }
+    .pause-badge svg{ width: 48px; height: 48px; }
+  }
+
   @media (max-width: 480px){
     .wrap{ padding: 48px 18px 90px; }
     .actions{ flex-direction: column; }
-    button, .btn{ width: 100%; justify-content: center; }
+    .btn{ width: 100%; justify-content: center; }
+    #copyBtn{ width: 100%; justify-content: center; }
+    .video-frame{ border-radius: 12px 12px 0 0; }
+    .video-controls{ border-radius: 0 0 12px 12px; }
+    .vc-btn span{ font-size: 12px; }
+  }
+
+  @media (max-width: 360px){
+    .time-readout{ flex: 1 0 100%; text-align: center; order: 3; }
+    .speed-group{ order: 4; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -369,20 +678,62 @@
   <h1>Here's exactly what<br>you're <span>getting</span>.</h1>
   <p class="sub">A quick rundown of everything from the video, itemized so you've got it in writing before the call.</p>
 
-  <div class="video-placeholder" id="videoFacade" style="background-image: linear-gradient(rgba(20,20,20,0.35), rgba(20,20,20,0.55)), url('https://img.youtube.com/vi/u8a2Vtin9Jc/hqdefault.jpg');">
-    <div class="video-thumb" id="videoThumb" onclick="loadVideo()">
-      <div class="play-btn">
+  <div class="video-stage">
+    <div class="video-frame" id="videoFrame">
+      <video id="vsl"
+             src="vsl3-web.mp4"
+             poster="poster.jpg"
+             muted
+             playsinline
+             webkit-playsinline
+             preload="auto"></video>
+
+      <div class="video-veil" id="videoVeil">
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="video-label">Watch the walkthrough</div>
+      </div>
+
+      <div class="pause-badge" id="pauseBadge" hidden>
         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </div>
-      <div class="video-label">Watch the walkthrough</div>
+
+      <div class="unmute-bar" id="unmuteBar" hidden>
+        <svg viewBox="0 0 24 24"><path d="M16.5 12A4.5 4.5 0 0 0 14 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.8 8.8 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.9 8.9 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+        Click here to unmute the video
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
     </div>
-    <div class="yt-player-wrap" id="ytPlayerWrap"></div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill"></div>
+
+    <div class="video-controls">
+      <button class="vc-btn" id="muteBtn" type="button" onclick="toggleMute()">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path id="muteIconPath" d="M4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.9 8.9 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+        <span id="muteLabel">Unmute</span>
+      </button>
+      <button class="vc-btn" type="button" onclick="restartVideo()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        Restart
+      </button>
+      <div class="time-readout" id="timeReadout"><b>0:00</b> / 0:00</div>
+      <div class="speed-group">
+        <span class="speed-label">Speed</span>
+        <button class="speed-btn active" type="button" data-rate="1" onclick="setRate(1, this)">1x</button>
+        <button class="speed-btn" type="button" data-rate="1.25" onclick="setRate(1.25, this)">1.25x</button>
+        <button class="speed-btn" type="button" data-rate="1.5" onclick="setRate(1.5, this)">1.5x</button>
+        <button class="speed-btn" type="button" data-rate="2" onclick="setRate(2, this)">2x</button>
+      </div>
     </div>
   </div>
 
   <div class="actions">
+    <a href="#faq" class="jump-faq" onclick="jumpToFaq(event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Most Asked Questions
+    </a>
     <button class="btn-ghost" id="copyBtn" onclick="copyNotes()">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
       <span id="copyLabel">Copy Notes</span>
@@ -432,6 +783,105 @@
   <div class="bottom-line">
     <h3>The Bottom Line</h3>
     <p>This whole system is built to plug the holes where small businesses typically lose leads: missed calls, missed texts, reviews that never get left, and customers who forget you exist after the job is done. It's the kind of automation big companies already use, built and priced for small businesses.</p>
+  </div>
+
+  <div class="faq" id="faq">
+    <div class="faq-head">
+      <h2 class="faq-title">Most Asked <span>Questions</span></h2>
+    </div>
+    <p class="faq-intro">The things people almost always ask once they've seen the walkthrough. If yours isn't here, bring it to the call.</p>
+    <button class="faq-toggle-all" id="faqToggleAll" type="button" onclick="toggleAllFaq()">Collapse all</button>
+
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">01</span>How much does this cost?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>Pricing depends on which pieces you turn on and whether you need a new site built or we're plugging into what you already have. You'll get an exact number on the call, not a range and not a surprise later.</p>
+     <p>There's no charge for the call itself, and no obligation to move forward after it.</p>
+        </div>
+      </details>
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">02</span>Am I locked into a long contract?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>No. This is built to earn its keep month to month. If it stops making you money, you shouldn't be trapped in it.</p>
+     <p>We'll go over the exact terms on the call so there's nothing buried in fine print.</p>
+        </div>
+      </details>
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">03</span>How long before it's actually live?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>Most of the automation, missed-call text back, the review system, the unified inbox, can be running within a few days, because it's configured, not built from scratch.</p>
+     <p>A brand-new website takes longer since it needs your photos, services, and service area. We'll set a real date on the call instead of a vague estimate.</p>
+        </div>
+      </details>
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">04</span>What do you actually need from me to get started?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>Less than most people expect. Roughly:</p>
+     <ul>
+       <li>Access to your Google Business profile</li>
+       <li>Your current phone number and who answers it</li>
+       <li>A list of your services and the area you cover</li>
+       <li>Photos of your work, if you have them</li>
+     </ul>
+     <p>We handle the setup, the wiring, and the message writing. You're not being handed a login and left to figure it out.</p>
+        </div>
+      </details>
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">05</span>Do I have to change my phone number?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>No. You keep the number your customers already know and the one printed on your truck and business cards.</p>
+     <p>The system works alongside it, so calls still ring your phone the way they do now. The difference is that a missed call no longer means a lost customer.</p>
+        </div>
+      </details>
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">06</span>What if I already have a website I like?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>Then we don't rebuild it. We can attach the chat widget, the forms, and the lead routing to the site you already have.</p>
+     <p>The rebuild is only worth it if your current site isn't converting visitors into calls, and we'll tell you honestly which situation you're in.</p>
+        </div>
+      </details>
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">07</span>I'm not tech-savvy. Can I actually run this?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>If you can use text messages, you can use this. That's genuinely the whole learning curve.</p>
+     <p>Everything lands in one app on your phone. You reply to a customer the same way you'd reply to a friend, and the automation handles the rest in the background.</p>
+        </div>
+      </details>
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">08</span>Is the automated review system against Google's rules?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>No, and this is a detail a lot of cheaper setups get wrong.</p>
+     <p>Every customer gets the same request and the same opportunity to leave public feedback. The private-feedback option sits below it as a choice, it isn't used to filter unhappy customers away from your Google listing. That's what keeps it compliant with <strong>FTC rules on review gating</strong>.</p>
+        </div>
+      </details>
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">09</span>Who writes the texts and the follow-up messages?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>We do, and then you approve them. They're written to sound like your business rather than a robot, because customers can tell the difference immediately.</p>
+     <p>You can change any message at any time, and if a specific line doesn't sound like you, we'll rewrite it.</p>
+        </div>
+      </details>
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">10</span>What if I'm already using another CRM or scheduling tool?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>Bring it to the call. In a lot of cases this replaces two or three tools you're already paying for, which means the real cost is lower than the sticker price.</p>
+     <p>Where it makes sense to keep what you have, we'll connect to it instead of forcing a switch.</p>
+        </div>
+      </details>
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">11</span>If I cancel, do I lose my customer list?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>Your contacts and your leads are yours. You can export them, and we'll help you do it rather than making it difficult on the way out.</p>
+     <p>Your Google reviews aren't going anywhere either, those live on your Google profile permanently, no matter what you do with us.</p>
+        </div>
+      </details>
+      <details class="faq-item" open>
+        <summary><span class="faq-q-num">12</span>How soon will I actually see results?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="faq-body">
+<p>Missed-call text back and the review requests are the fastest, those tend to show up within the first couple of weeks, because they're catching business you were already losing.</p>
+     <p>The year-long follow-up sequence is the slow compounding one. It's built for the referral or repeat job nine months from now that would otherwise have gone to whoever the customer happened to remember.</p>
+        </div>
+      </details>
   </div>
 
   <div class="cta-block">
@@ -487,61 +937,129 @@ This whole system is built to plug the holes where small businesses typically lo
     });
   }
 
-  function loadVideo(){
-    document.getElementById('videoThumb').style.display = 'none';
-    if (window.YT && window.YT.Player) {
-      createPlayer();
-    } else {
-      const tag = document.createElement('script');
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.body.appendChild(tag);
-      window.onYouTubeIframeAPIReady = createPlayer;
-    }
+
+  /* ---------------- FAQ ---------------- */
+  function toggleAllFaq(){
+    const items = document.querySelectorAll('.faq-item');
+    const anyOpen = [...items].some(d => d.open);
+    items.forEach(d => { d.open = !anyOpen; });
+    document.getElementById('faqToggleAll').textContent = anyOpen ? 'Expand all' : 'Collapse all';
   }
 
-  let ytPlayer;
-  let progressTimer;
-
-  function createPlayer(){
-    ytPlayer = new YT.Player('ytPlayerWrap', {
-      videoId: 'u8a2Vtin9Jc',
-      playerVars: { autoplay: 1, rel: 0 },
-      events: {
-        onReady: function(e){
-          const iframe = e.target.getIframe();
-          iframe.style.position = 'absolute';
-          iframe.style.inset = '0';
-          iframe.style.width = '100%';
-          iframe.style.height = '100%';
-          e.target.playVideo();
-        },
-        onStateChange: onPlayerStateChange
-      }
+  document.querySelectorAll('.faq-item').forEach(d => {
+    d.addEventListener('toggle', () => {
+      const anyOpen = [...document.querySelectorAll('.faq-item')].some(x => x.open);
+      document.getElementById('faqToggleAll').textContent = anyOpen ? 'Collapse all' : 'Expand all';
     });
+  });
+
+  function jumpToFaq(e){
+    e.preventDefault();
+    // make sure they land on open answers even if they'd collapsed them
+    document.querySelectorAll('.faq-item').forEach(d => { d.open = true; });
+    document.getElementById('faqToggleAll').textContent = 'Collapse all';
+    document.getElementById('faq').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function onPlayerStateChange(event){
-    if (event.data === YT.PlayerState.PLAYING) {
-      clearInterval(progressTimer);
-      progressTimer = setInterval(updateProgress, 200);
-    } else {
-      clearInterval(progressTimer);
-    }
-    if (event.data === YT.PlayerState.ENDED) {
-      document.getElementById('progressFill').style.width = '100%';
-    }
+  /* ---------------- video player ---------------- */
+  const vid = document.getElementById('vsl');
+  const veil = document.getElementById('videoVeil');
+  const unmuteBar = document.getElementById('unmuteBar');
+  const pauseBadge = document.getElementById('pauseBadge');
+  const progressFill = document.getElementById('progressFill');
+  const timeReadout = document.getElementById('timeReadout');
+  const muteLabel = document.getElementById('muteLabel');
+  const muteIconPath = document.getElementById('muteIconPath');
+
+  const ICON_MUTED = "M4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.9 8.9 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z";
+  const ICON_LOUD  = "M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z";
+
+  let started = false;
+
+  function fmt(t){
+    if (!isFinite(t) || t < 0) t = 0;
+    const m = Math.floor(t / 60);
+    const s = Math.floor(t % 60);
+    return m + ':' + (s < 10 ? '0' : '') + s;
   }
+
+  function startPlayback(){
+    started = true;
+    veil.hidden = true;
+    vid.play().catch(() => { veil.hidden = false; started = false; });
+  }
+
+  // Try muted autoplay on load. If the browser refuses, the play gate stays up.
+  vid.muted = true;
+  vid.play().then(() => {
+    started = true;
+    veil.hidden = true;
+  }).catch(() => {
+    veil.hidden = false;
+  });
+
+  // Clicking the video: first click starts it, then unmutes, then play/pause.
+  document.getElementById('videoFrame').addEventListener('click', () => {
+    if (!started) { startPlayback(); return; }
+    if (vid.muted) { unmute(); return; }
+    if (vid.paused) { vid.play(); } else { vid.pause(); }
+  });
+
+  function unmute(){
+    vid.muted = false;
+    if (vid.volume === 0) vid.volume = 1;
+    if (vid.paused) vid.play();
+    syncMuteUI();
+  }
+
+  function toggleMute(event){
+    if (vid.muted) { unmute(); } else { vid.muted = true; syncMuteUI(); }
+  }
+
+  function syncMuteUI(){
+    unmuteBar.hidden = !(vid.muted && started);
+    muteLabel.textContent = vid.muted ? 'Unmute' : 'Mute';
+    muteIconPath.setAttribute('d', vid.muted ? ICON_MUTED : ICON_LOUD);
+  }
+
+  function restartVideo(){
+    vid.currentTime = 0;
+    progressFill.style.width = '0%';
+    if (!started) { startPlayback(); } else { vid.play(); }
+  }
+
+  function setRate(rate, btn){
+    vid.playbackRate = rate;
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // Keep the control-strip buttons from also triggering the frame click handler.
+  document.querySelectorAll('.video-controls button').forEach(b => {
+    b.addEventListener('click', e => e.stopPropagation());
+  });
 
   function updateProgress(){
-    if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
-    const duration = ytPlayer.getDuration();
-    if (!duration) return;
-    const elapsedFraction = ytPlayer.getCurrentTime() / duration;
-    // Non-linear mapping: bar reads as moving faster than real time early on,
-    // then eases off as the video goes on. Exponent under 1 does that.
+    const duration = vid.duration;
+    if (!duration || !isFinite(duration)) return;
+    const elapsedFraction = Math.min(vid.currentTime / duration, 1);
+    // Non-linear mapping: the bar reads as moving fast early on, then eases
+    // off as the video goes on. An exponent under 1 does that.
     const displayFraction = Math.pow(elapsedFraction, 0.45);
-    document.getElementById('progressFill').style.width = (displayFraction * 100) + '%';
-  }</script>
+    progressFill.style.width = (displayFraction * 100) + '%';
+    timeReadout.innerHTML = '<b>' + fmt(vid.currentTime) + '</b> / ' + fmt(duration);
+  }
+
+  vid.addEventListener('timeupdate', updateProgress);
+  vid.addEventListener('loadedmetadata', updateProgress);
+  vid.addEventListener('play', () => { started = true; veil.hidden = true; pauseBadge.hidden = true; syncMuteUI(); });
+  vid.addEventListener('pause', () => { if (started && !vid.ended) pauseBadge.hidden = false; });
+  vid.addEventListener('volumechange', syncMuteUI);
+  vid.addEventListener('ended', () => {
+    progressFill.style.width = '100%';
+    pauseBadge.hidden = true;
+  });
+</script>
 
 </body>
 </html>
