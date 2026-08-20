@@ -276,6 +276,31 @@
     transition: width 0.25s linear;
   }
 
+  /* ---------- fullscreen ---------- */
+  .video-frame:fullscreen{
+    border-radius: 0;
+    border: none;
+    aspect-ratio: auto;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+  }
+  .video-frame:fullscreen video{ object-fit: contain; }
+  .video-frame:-webkit-full-screen{
+    border-radius: 0;
+    border: none;
+    aspect-ratio: auto;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+  }
+  .video-frame:-webkit-full-screen video{ object-fit: contain; }
+  /* roomier controls once we have the whole screen */
+  .video-frame:fullscreen .video-controls{ padding: 60px 26px 30px; }
+  .video-frame:fullscreen .vc-btn{ width: 46px; height: 46px; }
+  .video-frame:fullscreen .speed-btn{ padding: 11px 14px; font-size: 13px; }
+  .video-frame:fullscreen .progress-track{ height: 6px; }
+
   /* control bar: lives ON the video, hidden until they click it */
   .video-controls{
     position: absolute;
@@ -667,8 +692,18 @@
     }
     .vc-btn{ width: 42px; height: 42px; }
     .speed-label{ display: none; }
-    .speed-btn{ padding: 10px 9px; font-size: 12px; }
+    /* speed drops to its own row so play/restart/mute/time/fullscreen fit across the top */
+    .speed-group{
+      flex: 1 0 100%;
+      margin-left: 0;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .speed-btn{ flex: 1 1 0; padding: 11px 6px; font-size: 12px; }
     .time-readout{ font-size: 12px; padding: 0 2px; }
+    /* DOM order puts speed before fullscreen; flip them so speed takes the lower row */
+    .fullscreen-btn{ order: 1; margin-left: auto; }
+    .speed-group{ order: 2; }
     .play-btn{ width: 62px; height: 62px; }
     .pause-badge svg{ width: 50px; height: 50px; }
   }
@@ -741,6 +776,9 @@
           <button class="speed-btn" type="button" data-rate="1.5">1.5x</button>
           <button class="speed-btn" type="button" data-rate="2">2x</button>
         </div>
+        <button class="vc-btn fullscreen-btn" id="fullscreenBtn" type="button" title="Full screen">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path id="fsIcon" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+        </button>
       </div>
 
       <div class="video-error" id="videoError" hidden>
@@ -820,8 +858,8 @@
       <details class="faq-item" open>
         <summary><span class="faq-q-num">01</span>How much does this cost?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
         <div class="faq-body">
-<p>Pricing depends on which pieces you turn on and whether you need a new site built or we're plugging into what you already have. You'll get an exact number on the call, not a range and not a surprise later.</p>
-     <p>There's no charge for the call itself, and no obligation to move forward after it.</p>
+<p>Our standard package is <strong>$199 a month</strong>. That covers the whole system: the website, missed-call text back, the review automation, the unified inbox, and the year-long follow-up sequence.</p>
+     <p>If you need something outside that, we'll price it on the call. There's no charge for the call itself, and no obligation to move forward after it.</p>
         </div>
       </details>
       <details class="faq-item" open>
@@ -834,8 +872,8 @@
       <details class="faq-item" open>
         <summary><span class="faq-q-num">03</span>How long before it's actually live?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
         <div class="faq-body">
-<p>Most of the automation, missed-call text back, the review system, the unified inbox, can be running within a few days, because it's configured, not built from scratch.</p>
-     <p>A brand-new website takes longer since it needs your photos, services, and service area. We'll set a real date on the call instead of a vague estimate.</p>
+<p><strong>Two to three weeks</strong> from the day we start, and you'll be live.</p>
+     <p>Most of that window is the website, since it needs your photos, services, and service area. The automation behind it, missed-call text back, the review system, the unified inbox, comes online sooner than that, because it's configured rather than built from scratch.</p>
         </div>
       </details>
       <details class="faq-item" open>
@@ -854,15 +892,17 @@
       <details class="faq-item" open>
         <summary><span class="faq-q-num">05</span>Do I have to change my phone number?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
         <div class="faq-body">
-<p>No. You keep the number your customers already know and the one printed on your truck and business cards.</p>
-     <p>The system works alongside it, so calls still ring your phone the way they do now. The difference is that a missed call no longer means a lost customer.</p>
+<p>No. You keep the number your customers already know, the one printed on your truck and your business cards. Calls still ring your phone the way they do now.</p>
+     <p>The system does get its own separate number, and that's what the automated texts go out from. So when you miss a call, the follow-up text reaches the customer from that number rather than your personal line.</p>
+     <p>Their replies land in your app alongside everything else, and it keeps business conversations out of your personal messages.</p>
         </div>
       </details>
       <details class="faq-item" open>
         <summary><span class="faq-q-num">06</span>What if I already have a website I like?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
         <div class="faq-body">
-<p>Then we don't rebuild it. We can attach the chat widget, the forms, and the lead routing to the site you already have.</p>
-     <p>The rebuild is only worth it if your current site isn't converting visitors into calls, and we'll tell you honestly which situation you're in.</p>
+<p>We do rebuild it, and that isn't an upsell, it's what makes the rest work.</p>
+     <p>The forms, the chat widget, and the lead routing all have to be wired directly into the site so a new lead lands on your phone the second it comes in. Bolting that onto an existing site is where these setups break.</p>
+     <p>You keep your domain, your branding, and your content. What changes is what's underneath it.</p>
         </div>
       </details>
       <details class="faq-item" open>
@@ -903,8 +943,10 @@
       <details class="faq-item" open>
         <summary><span class="faq-q-num">12</span>How soon will I actually see results?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
         <div class="faq-body">
-<p>Missed-call text back and the review requests are the fastest, those tend to show up within the first couple of weeks, because they're catching business you were already losing.</p>
-     <p>The year-long follow-up sequence is the slow compounding one. It's built for the referral or repeat job nine months from now that would otherwise have gone to whoever the customer happened to remember.</p>
+<p>The database reactivation is usually where you feel it first. We go back through the customers and leads you already have and put that list back to work, so it's not waiting on new traffic to find you.</p>
+     <p>After that it's the missed-call text back and the review requests, because those catch business you were already losing.</p>
+     <p>The year-long follow-up sequence is the slow compounding one. It's built for the referral or repeat job nine months out that would otherwise go to whoever the customer happened to remember.</p>
+     <p><strong>What we won't do is put a number on it.</strong> We can't tell you how many leads you'll get, and anyone who promises you a specific number is guessing. What we control is that every lead who does come in gets caught, answered, and followed up with, instead of slipping through.</p>
         </div>
       </details>
   </div>
@@ -1022,6 +1064,7 @@ This whole system is built to plug the holes where small businesses typically lo
   const ICON_PAUSE = "M6 5h4v14H6zM14 5h4v14h-4z";
 
   let started = false;
+  let everUnmuted = false;
   let hideTimer;
 
   function fmt(t){
@@ -1106,6 +1149,7 @@ This whole system is built to plug the holes where small businesses typically lo
 
   function unmute(){
     vid.muted = false;
+    everUnmuted = true;
     if (vid.volume === 0) vid.volume = 1;
     if (vid.paused) vid.play();
     syncMuteUI();
@@ -1113,13 +1157,17 @@ This whole system is built to plug the holes where small businesses typically lo
 
   /* Clicking the video: start it, then unmute it, then reveal the controls. */
   frame.addEventListener('click', () => {
-    if (!started)      { startPlayback(); return; }
-    if (vid.muted)     { unmute(); showControls(); return; }
+    if (!started) { startPlayback(); return; }
+    // the unmute-on-tap only applies to the very first tap, while the big CTA is up
+    if (vid.muted && !everUnmuted) { unmute(); showControls(); return; }
+    // after that, tapping the screen just clears or brings back the menus
     if (controlsVisible()) { hideControls(); } else { showControls(); }
   });
 
   function syncMuteUI(){
-    const needsUnmute = vid.muted && started && !vid.error;
+    /* The big CTA is a one-time entry prompt. Once they've unmuted, re-muting from
+       the control bar must not slam it back over the top of the controls. */
+    const needsUnmute = vid.muted && started && !everUnmuted && !vid.error;
     unmuteCta.hidden = !needsUnmute;
     muteIconPath.setAttribute('d', vid.muted ? ICON_MUTED : ICON_LOUD);
   }
@@ -1160,6 +1208,43 @@ This whole system is built to plug the holes where small businesses typically lo
     frame.addEventListener('mouseenter', () => { if (started && !vid.muted) showControls(); });
     frame.addEventListener('mouseleave', () => { if (!vid.paused) hideControls(); });
   }
+
+  /* ---------------- full screen ---------------- */
+  const fsIcon = document.getElementById('fsIcon');
+  const ICON_FS_ENTER = "M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z";
+  const ICON_FS_EXIT  = "M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z";
+
+  function fsElement(){
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+
+  function toggleFullscreen(){
+    if (fsElement()) {
+      if (document.exitFullscreen)            document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      return;
+    }
+    if (frame.requestFullscreen)            frame.requestFullscreen();
+    else if (frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+    /* iPhone can't fullscreen a container, only the video itself. That hands over
+       to Apple's native player, which is the expected behaviour on iOS. */
+    else if (vid.webkitEnterFullscreen)     vid.webkitEnterFullscreen();
+  }
+
+  function syncFsUI(){
+    fsIcon.setAttribute('d', fsElement() ? ICON_FS_EXIT : ICON_FS_ENTER);
+  }
+
+  document.getElementById('fullscreenBtn').addEventListener('click', e => {
+    e.stopPropagation();
+    toggleFullscreen();
+    showControls();
+  });
+  document.addEventListener('fullscreenchange', syncFsUI);
+  document.addEventListener('webkitfullscreenchange', syncFsUI);
+
+  /* in fullscreen a moving mouse should wake the controls, like any video player */
+  frame.addEventListener('mousemove', () => { if (fsElement()) showControls(); });
 
   function updateProgress(){
     const duration = vid.duration;
